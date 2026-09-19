@@ -1,0 +1,6 @@
+bin/
+obj/
+artifacts/
+*.user
+*.suo
+ControlDeck/*_wpftmp.csproj

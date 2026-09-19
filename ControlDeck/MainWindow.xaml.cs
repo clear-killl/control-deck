@@ -1,10 +1,9 @@
 ﻿using System.Diagnostics;
+using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
 using System.Windows;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Linq;
 
 namespace ControlDeck;
@@ -14,8 +13,9 @@ namespace ControlDeck;
 /// </summary>
 public partial class MainWindow : Window
 {
-    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-    private static extern int SystemParametersInfo(uint action, uint parameter, string imagePath, uint updateIniFile);
+    [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool SystemParametersInfo(uint action, uint parameter, string imagePath, uint updateIniFile);
 
     private const uint SetDesktopWallpaper = 20;
     private const uint UpdateIniFile = 1;
@@ -40,7 +40,7 @@ public partial class MainWindow : Window
     private void TaskManager_Click(object sender, RoutedEventArgs e)
     {
         PageTitle.Text = "Мониторинг";
-        PageSubtitle.Text = $"Активных процессов: {Process.GetProcesses().Length}";
+        PageSubtitle.Text = $"Активных процессов: {GetProcessCount()}";
         StartProcess("taskmgr.exe");
         RefreshProcesses();
     }
@@ -50,7 +50,12 @@ public partial class MainWindow : Window
     {
         var dialog = new OpenFileDialog { Filter = "Изображения|*.jpg;*.jpeg;*.png;*.bmp", Title = "Выберите обои" };
         if (dialog.ShowDialog() != true) return;
-        SystemParametersInfo(SetDesktopWallpaper, 0, dialog.FileName, UpdateIniFile | SendChange);
+        if (!SystemParametersInfo(SetDesktopWallpaper, 0, dialog.FileName, UpdateIniFile | SendChange))
+        {
+            SetStatus($"Не удалось установить обои (код Windows {Marshal.GetLastWin32Error()})");
+            return;
+        }
+
         WallpaperName.Text = Path.GetFileName(dialog.FileName);
         SetStatus("Обои рабочего стола обновлены");
     }
@@ -75,10 +80,44 @@ public partial class MainWindow : Window
 
     private void RefreshProcesses()
     {
-        ProcessList.ItemsSource = Process.GetProcesses()
-            .OrderBy(process => process.ProcessName)
-            .Select(process => $"{process.ProcessName}  |  PID {process.Id}")
-            .ToList();
+        var rows = new List<string>();
+        foreach (var process in Process.GetProcesses())
+        {
+            try
+            {
+                rows.Add($"{process.ProcessName}  |  PID {process.Id}");
+            }
+            catch (InvalidOperationException)
+            {
+                // The process can exit while the snapshot is being read.
+            }
+            catch (Win32Exception)
+            {
+                // Access to a protected process can be denied by Windows.
+            }
+            finally
+            {
+                process.Dispose();
+            }
+        }
+
+        ProcessList.ItemsSource = rows.OrderBy(row => row, StringComparer.OrdinalIgnoreCase).ToList();
+    }
+
+    private static int GetProcessCount()
+    {
+        var processes = Process.GetProcesses();
+        try
+        {
+            return processes.Length;
+        }
+        finally
+        {
+            foreach (var process in processes)
+            {
+                process.Dispose();
+            }
+        }
     }
 
     private void NetworkProfiles_Click(object sender, RoutedEventArgs e)
@@ -93,7 +132,13 @@ public partial class MainWindow : Window
     {
         try
         {
-            Process.Start(new ProcessStartInfo(target) { UseShellExecute = true });
+            using var process = Process.Start(new ProcessStartInfo(target) { UseShellExecute = true });
+            if (process is null)
+            {
+                SetStatus($"Windows не запустила: {target}");
+                return;
+            }
+
             SetStatus($"Запущено: {target}");
         }
         catch (Exception exception)
