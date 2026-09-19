@@ -1,0 +1,117 @@
+﻿<Window x:Class="ControlDeck.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ControlDeck"
+        mc:Ignorable="d"
+        Title="Control Deck" Height="760" Width="1240" MinHeight="620" MinWidth="980"
+        Background="#101419" Foreground="#F1F5F2" WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="#1C2728" />
+            <Setter Property="Foreground" Value="#E7F0EA" />
+            <Setter Property="BorderBrush" Value="#314344" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="14,10" />
+            <Setter Property="Margin" Value="0,0,8,8" />
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+        <Style TargetType="ListBox">
+            <Setter Property="Background" Value="#151C20" />
+            <Setter Property="BorderBrush" Value="#28363A" />
+            <Setter Property="Foreground" Value="#DCE7E0" />
+        </Style>
+    </Window.Resources>
+    <Grid Margin="28">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="220"/><ColumnDefinition Width="24"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+        <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="20"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+
+        <StackPanel Grid.ColumnSpan="3">
+            <TextBlock Text="CONTROL DECK" FontSize="13" FontWeight="Bold" Foreground="#65D6A1" />
+            <TextBlock Text="Центр управления Windows" FontSize="28" FontWeight="SemiBold" Margin="0,4,0,0" />
+        </StackPanel>
+
+        <Border Grid.Row="2" Background="#151C20" Padding="16" CornerRadius="6">
+            <StackPanel>
+                <TextBlock Text="РАЗДЕЛЫ" FontSize="11" Foreground="#7D918B" Margin="0,0,0,12" />
+                <Button Content="Обзор" Click="Overview_Click" />
+                <Button Content="Обои" Click="Wallpaper_Click" />
+                <Button Content="Библиотека" Click="Library_Click" />
+                <Button Content="Мониторинг" Click="TaskManager_Click" />
+                <Button Content="Инструменты" Click="Tools_Click" />
+                <Separator Margin="0,18,0,18" Background="#28363A" />
+                <TextBlock Text="СИСТЕМА" FontSize="11" Foreground="#7D918B" Margin="0,0,0,12" />
+                <TextBlock Text="Windows 10 / 11" Foreground="#C2CDC7" />
+                <TextBlock Text="Локальный режим" Foreground="#65D6A1" Margin="0,4,0,0" />
+            </StackPanel>
+        </Border>
+
+        <ScrollViewer Grid.Row="2" Grid.Column="2" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <TextBlock x:Name="PageTitle" Text="Обзор" FontSize="22" FontWeight="SemiBold" />
+                <TextBlock x:Name="PageSubtitle" Text="Быстрый доступ к повседневным действиям" Foreground="#92A39C" Margin="0,4,0,18" />
+
+                <UniformGrid Columns="2">
+                    <Border Background="#182423" Padding="18" Margin="0,0,10,10" CornerRadius="6">
+                        <StackPanel>
+                            <TextBlock Text="РАБОЧИЙ СТОЛ" FontSize="11" Foreground="#7D918B" />
+                            <TextBlock x:Name="WallpaperName" Text="Обои не выбраны" FontSize="18" Margin="0,8,0,14" />
+                            <Button Content="Выбрать изображение" Click="ChooseWallpaper_Click" HorizontalAlignment="Left" />
+                        </StackPanel>
+                    </Border>
+                    <Border Background="#182423" Padding="18" Margin="10,0,0,10" CornerRadius="6">
+                        <StackPanel>
+                            <TextBlock Text="ГОЛОС" FontSize="11" Foreground="#7D918B" />
+                            <TextBlock Text="Русская диктовка" FontSize="18" Margin="0,8,0,14" />
+                            <Button Content="Открыть голосовой ввод (Win + H)" Click="VoiceInput_Click" HorizontalAlignment="Left" />
+                        </StackPanel>
+                    </Border>
+                </UniformGrid>
+
+                <Border Background="#151C20" Padding="18" Margin="0,10,0,10" CornerRadius="6">
+                    <StackPanel>
+                        <TextBlock Text="БЫСТРЫЙ ЗАПУСК" FontSize="11" Foreground="#7D918B" />
+                        <WrapPanel Margin="0,12,0,0">
+                            <Button Content="Steam" Click="Steam_Click" />
+                            <Button Content="Wallpaper Engine" Click="WallpaperEngine_Click" />
+                            <Button Content="Проводник" Click="Explorer_Click" />
+                            <Button Content="Настройки Windows" Click="Settings_Click" />
+                        </WrapPanel>
+                    </StackPanel>
+                </Border>
+
+                <Grid Margin="0,10,0,0">
+                    <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="10"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                    <Border Background="#151C20" Padding="18" Grid.Column="0" CornerRadius="6">
+                        <StackPanel>
+                            <TextBlock Text="AMD GPU" FontSize="11" Foreground="#7D918B" />
+                            <TextBlock Text="Профиль производительности" FontSize="17" Margin="0,8,0,6" />
+                            <TextBlock Text="Переход к AMD Software: Adrenalin Edition. Изменение напряжений и частот выполняется только вручную в официальной утилите." TextWrapping="Wrap" Foreground="#92A39C" />
+                            <Button Content="Открыть AMD Software" Click="Amd_Click" HorizontalAlignment="Left" Margin="0,14,0,0" />
+                        </StackPanel>
+                    </Border>
+                    <Border Background="#151C20" Padding="18" Grid.Column="2" CornerRadius="6">
+                        <StackPanel>
+                            <TextBlock Text="СЕТЕВЫЕ ПРОФИЛИ" FontSize="11" Foreground="#7D918B" />
+                            <TextBlock Text="Локальный маршрутизатор" FontSize="17" Margin="0,8,0,6" />
+                            <TextBlock Text="Запуск настроенного локального прокси-профиля без встроенных списков обхода и без передачи данных наружу." TextWrapping="Wrap" Foreground="#92A39C" />
+                            <Button Content="Открыть папку профилей" Click="NetworkProfiles_Click" HorizontalAlignment="Left" Margin="0,14,0,0" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <TextBlock x:Name="StatusText" Text="Готово" Foreground="#65D6A1" Margin="0,20,0,0" />
+                <Border Background="#151C20" Padding="18" Margin="0,14,0,0" CornerRadius="6">
+                    <StackPanel>
+                        <DockPanel>
+                            <TextBlock Text="ПРОЦЕССЫ" FontSize="11" Foreground="#7D918B" />
+                            <Button Content="Обновить" Click="RefreshProcesses_Click" DockPanel.Dock="Right" Padding="10,6" Margin="0,-8,0,0" />
+                        </DockPanel>
+                        <ListBox x:Name="ProcessList" Height="150" Margin="0,12,0,0" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Window>
